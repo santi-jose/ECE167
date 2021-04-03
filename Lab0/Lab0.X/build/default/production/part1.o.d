@@ -1,5 +1,0 @@
-build/default/production/part1.o: part1.c BOARD.h serial.h
-
-BOARD.h:
-
-serial.h:
