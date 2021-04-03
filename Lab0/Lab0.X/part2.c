@@ -24,17 +24,17 @@ int main(void)
     AD_Init(); //init AD
     
     AD_AddPins(AD_A0); //add pin A0, potentiometer
-    int p = 0; //initialize potentiometer value
-    char print_statement[100];
+    int p; //declare potentiometer value variable
+    char oled_str[100]; //declare oled_str char array
     
     while(1){ //infinite loop
-        OledClear(OLED_COLOR_BLACK);
+        OledClear(OLED_COLOR_BLACK); //clear oled
         if(AD_IsNewDataReady() == TRUE){ //if new data is ready
-            p = AD_ReadADPin(AD_A0);
+            p = AD_ReadADPin(AD_A0); //read new value from pot
         }
-        sprintf(print_statement, "Potentiometer value: %d",p);
-        OledDrawString(print_statement);
-        OledUpdate();
+        sprintf(oled_str, "Potentiometer value:\n%d",p); //define oled_str
+        OledDrawString(oled_str); //draw oled_str on oled
+        OledUpdate(); //update oled
     }
     
     
