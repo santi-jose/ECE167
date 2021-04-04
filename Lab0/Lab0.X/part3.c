@@ -24,7 +24,7 @@ int main(void)
     
     while(1){ //infinite loop
         //keep tone on
-    }  
+    }
     
     while(1); //if embedded we never exit
 }
