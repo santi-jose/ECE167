@@ -52,10 +52,9 @@ int main(void)
         }
         avg = avg/100; //average of frequency samples
         if(avg > 1000){ //if avg is greater than 1000
-            avg = 1000; //set to avg 1000
+            avg = 1000; //set avg to 1000
         }
         i_f++; //increment f_buff index
-        //ToneGeneration_SetFrequency(avg); //set ToneGeneration frequency
         
         //Print frequency to OLED
         sprintf(oled_str, "Frequency: %d",avg); //define oled_str to print f avg
