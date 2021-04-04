@@ -20,13 +20,17 @@
  */
 int main(void)
 {
+    //initializations
     BOARD_Init(); //init BOARD
     OledInit(); //init Oled
     AD_Init(); //init AD
     ToneGeneration_Init(); //init ToneGeneration
     
+    //configure hardware
     AD_AddPins(AD_A0); //add pin A0, potentiometer
     ToneGeneration_ToneOn(); //turn ToneGeneration on
+    
+    //variable declarations
     int p; //declare potentiometer value variable
     int f; //initialize frequency variable
     int f_buff[100] = {0}; //initialize frequency buffer
