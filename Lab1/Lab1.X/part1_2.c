@@ -28,15 +28,22 @@ int main(void)
     int d; //degree conversion variable
     
     while(1){
-        t = TIMERS_GetMilliSeconds();
-        if(t%1000 == 0){ //every 1 second
-            if(AD_IsNewDataReady() == TRUE){
-                f = AD_ReadADPin(AD_A1); //store flex sensor reading
-                d = (-0.434*f) + 527; //store degree conversion
-            }
-            printf("flex sensor value:\n%d\n",f);
-            printf("degrees:\n%d\n",d);
-            printf("1 second has passed\n");
+        t = TIMERS_GetMilliSeconds(); //store current time
+        
+        //check flex sensor reading
+        if(AD_IsNewDataReady() == TRUE){
+            f = AD_ReadADPin(AD_A1); //store flex sensor reading
+            d = (-0.434*f) + 437; //store degree conversion
+        }
+        
+        //print notifications
+        printf("flex sensor value:\n%d\n",f);
+        printf("degrees:\n%d\n",d);
+        printf("1 second has passed\n");
+        
+        //wait a second
+        while((t%1000)!=0){
+            t = TIMERS_GetMilliSeconds();
         }
     }
 
