@@ -53,6 +53,7 @@ char QEI_Init(void){
     TRISDbits.TRISD6 = 1;
     TRISDbits.TRISD7 = 1;
     QEI_count = 0;
+    return SUCCESS;
 }
 
 /**
@@ -99,7 +100,12 @@ void QEI_SM(void){
 
 
 void __ISR(_CHANGE_NOTICE_VECTOR) ChangeNotice_Handler(void) {
+//testing**********************************************************************
     QEI_count = QEI_count + 1; //increment count
+    printf("QEI_count: %d\n", QEI_GetPosition());
+    printf("A: %d B: %d ", A, B);
+//*****************************************************************************
+    
     static char readPort = 0;
     readPort = PORTD; // this read is required to make the interrupt work
     IFS1bits.CNIF = 0;
