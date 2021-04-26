@@ -52,6 +52,7 @@ char QEI_Init(void){
     //add stuff
     TRISDbits.TRISD6 = 1;
     TRISDbits.TRISD7 = 1;
+    QEI_count = 0;
 }
 
 /**

@@ -5,8 +5,10 @@
  * Created on April 26, 2021, 2:58 AM
  */
 
+#include <proc/p32mx340f512h.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/attribs.h>
 #include <xc.h>
 
 #include "BOARD.h"
@@ -26,12 +28,12 @@ int main(void)
     OledInit();
     
     int q; //QEI count variable
-    int t; //time variable
+    //int t; //time variable
     char oled_str[100]; //oled string
     
     while(1){
         OledClear(OLED_COLOR_BLACK);
-        t = TIMERS_GetMilliSeconds(); //read time
+        //t = TIMERS_GetMilliSeconds(); //read time
         q = QEI_GetPosition(); //read QEI count
         //q++;
         sprintf(oled_str,"QEI_count: %d\n", q);
