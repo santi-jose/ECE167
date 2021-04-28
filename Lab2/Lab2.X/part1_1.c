@@ -26,13 +26,19 @@ int main(void)
     OledInit();
     
     int q; //QEI count variable
-    //int t; //time variable
+    int d; //QEI degrees variable
     char oled_str[100]; //oled string
     
     while(1){
         OledClear(OLED_COLOR_BLACK);
         q = QEI_GetPosition(); //read QEI count
-        sprintf(oled_str,"QEI_count: %d\n", q);
+        
+        //convert QEI position to degrees
+        d = abs((q*15)%360);
+        sprintf(oled_str,
+                "QEI count: %d\n"
+                "QEI degrees: %d\n"
+                , q, d);
         
         OledDrawString(oled_str);
         OledUpdate();

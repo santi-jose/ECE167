@@ -24,11 +24,18 @@
 #define B PORTDbits.RD7 //pin 37
 
 typedef enum{
-    CW,
-    CCW
-}DIR; //typedef DIR as an enum of states CW & CCW
+    IDLE,
+    CW_01,
+    CW_00,
+    CW_10,
+    CW_11,
+    CCW_10,
+    CCW_00,
+    CCW_01,
+    CCW_11
+}EDGE; //typedef DIR as an enum of states CW & CCW
 
-DIR D; //D of type DIR to denote current direction of encoder
+EDGE E; //D of type DIR to denote current direction of encoder
 static int QEI_count; //keep track of the count during the encoder's rotation
 
 /**
@@ -52,7 +59,8 @@ char QEI_Init(void){
     //add stuff
     TRISDbits.TRISD6 = 1;
     TRISDbits.TRISD7 = 1;
-    QEI_count = 0;
+    QEI_count = 0; //set QEI_Count to 0
+    E = IDLE; //set state of QEI_SM to IDLE
     return SUCCESS;
 }
 
@@ -62,8 +70,7 @@ char QEI_Init(void){
  * @brief This function returns the current count of the Quadrature Encoder in ticks.      
 */
 int QEI_GetPosition(void){
-    //printf("Returning QEI_count: %d\n", QEI_count);
-    return QEI_count; //return QEI counter value
+    return QEI_count; //return QEI count value
 }
 
 /**
@@ -73,44 +80,123 @@ int QEI_GetPosition(void){
  * @brief  Resets the encoder such that it starts counting from 0.
 */
 void QEI_ResetPosition(){
-    QEI_count = 0; //set counter back to zero
+    QEI_count = 0; //set count back to 0
+    E = IDLE;
+    IFS1bits.CNIF;     //clear interrupt flag
 }
 
 /*
  * @Function QEI_SM(enum DIR)
  * @param enum DIR
  * @return none
- * @brief State machine for CW or CCW direction of encoder
+ * @brief State machine for directional states of encoder
  */
 void QEI_SM(void){
-    switch(D){
-        case CW: //clockwise
-            QEI_count++; //increment QEI counter
-            printf("Encoder is rotating clockwise\n");
+    switch(E){
+        case IDLE:
+            if((~A) && B){ 
+                QEI_count++;
+                E = CW_01; 
+            }
+            if(A && (~B)){ 
+                QEI_count--;
+                E = CCW_10;
+            }
             break;
-        case CCW: //counterclockwise
-            QEI_count--; //decrement QEI counter
-            printf("Encoder is rotating counterclockwise\n");
+        case CW_01:
+            if((~A) && (~B)){
+                QEI_count++;
+                E = CW_00;
+            }
+            if(A && B){
+                QEI_count--;
+                E = CCW_11;
+            }
+            break;
+        case CW_00:
+            if(A && (~B)){
+                QEI_count++;
+                E = CW_10;
+            }
+            if((~A) && B){
+                QEI_count--;
+                E = CCW_01;
+            }
+            break;
+        case CW_10:
+            if(A && B){
+                QEI_count++;
+                E = CW_11;
+            }
+            if((~A)&&(~B)){
+                QEI_count--;
+                E = CCW_00;
+            }
+            break;
+        case CW_11: 
+            if((~A)&&(B)){
+                QEI_count++;
+                E = CW_01;
+            }
+            if(A && (~B)){
+                QEI_count--;
+                E = CCW_10;
+            }
+            break;
+        case CCW_10:
+            if((~A) && (~B)){
+                QEI_count--;
+                E = CCW_00;
+            }
+            if(A && B){
+                QEI_count++;
+                E = CW_11;
+            }
+            break;
+        case CCW_00:
+            if((~A) && B){
+                QEI_count--;
+                E = CCW_01;
+            }
+            if(A && (~B)){
+                QEI_count++;
+                E = CW_10;
+            }
+            break;
+        case CCW_01:
+            if(A && B){
+                QEI_count--;
+                E = CCW_11;
+            }
+            if((~A) && (~B)){
+                QEI_count++;
+                E = CW_00;
+            }
+            break;
+        case CCW_11:
+            if(A && (~B)){
+                QEI_count--;
+                E = CCW_10;
+            }
+            if((~A) && B){
+                QEI_count++;
+                E = CW_01;
+            }
             break;
         default:
-            printf("Encoder is neither cw or ccw\n");
+            printf("Error: Encoder State should never default\n");
             break;
     }
 }
 
 
 void __ISR(_CHANGE_NOTICE_VECTOR) ChangeNotice_Handler(void) {
-//testing**********************************************************************
-    QEI_count = QEI_count + 1; //increment count
-    printf("QEI_count: %d\n", QEI_GetPosition());
-    printf("A: %d B: %d ", A, B);
-//*****************************************************************************
-    
     static char readPort = 0;
     readPort = PORTD; // this read is required to make the interrupt work
     IFS1bits.CNIF = 0;
-    //anything else that needs to happen goes here
-     
+    
+    //call QEI_SM
+    QEI_SM();
 }
 
 
