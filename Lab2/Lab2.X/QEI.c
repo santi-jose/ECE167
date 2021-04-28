@@ -35,7 +35,21 @@ typedef enum{
     CCW_11
 }EDGE; //typedef DIR as an enum of states CW & CCW
 
+typedef enum{
+    ONE,
+    TWO,
+    THREE,
+    FOUR
+}STATE;
+
+typedef enum{
+    FWD,
+    BWD
+}DIR;
+
 EDGE E; //D of type DIR to denote current direction of encoder
+STATE S;
+DIR D;
 static int QEI_count; //keep track of the count during the encoder's rotation
 
 /**
@@ -61,6 +75,7 @@ char QEI_Init(void){
     TRISDbits.TRISD7 = 1;
     QEI_count = 0; //set QEI_Count to 0
     E = IDLE; //set state of QEI_SM to IDLE
+    S = ONE; 
     return SUCCESS;
 }
 
@@ -91,7 +106,7 @@ void QEI_ResetPosition(){
  * @return none
  * @brief State machine for directional states of encoder
  */
-void QEI_SM(void){
+/*void QEI_SM(void){
     switch(E){
         case IDLE:
             if((~A) && B){ 
@@ -117,8 +132,7 @@ void QEI_SM(void){
             if(A && (~B)){
                 QEI_count++;
                 E = CW_10;
-            }
-            if((~A) && B){
+            } if((~A) && B){
                 QEI_count--;
                 E = CCW_01;
             }
@@ -127,8 +141,7 @@ void QEI_SM(void){
             if(A && B){
                 QEI_count++;
                 E = CW_11;
-            }
-            if((~A)&&(~B)){
+            } if((~A)&&(~B)){
                 QEI_count--;
                 E = CCW_00;
             }
@@ -137,8 +150,7 @@ void QEI_SM(void){
             if((~A)&&(B)){
                 QEI_count++;
                 E = CW_01;
-            }
-            if(A && (~B)){
+            } if(A && (~B)){
                 QEI_count--;
                 E = CCW_10;
             }
@@ -147,8 +159,7 @@ void QEI_SM(void){
             if((~A) && (~B)){
                 QEI_count--;
                 E = CCW_00;
-            }
-            if(A && B){
+            } if(A && B){
                 QEI_count++;
                 E = CW_11;
             }
@@ -157,8 +168,7 @@ void QEI_SM(void){
             if((~A) && B){
                 QEI_count--;
                 E = CCW_01;
-            }
-            if(A && (~B)){
+            } if(A && (~B)){
                 QEI_count++;
                 E = CW_10;
             }
@@ -167,8 +177,7 @@ void QEI_SM(void){
             if(A && B){
                 QEI_count--;
                 E = CCW_11;
-            }
-            if((~A) && (~B)){
+            } if((~A) && (~B)){
                 QEI_count++;
                 E = CW_00;
             }
@@ -177,10 +186,61 @@ void QEI_SM(void){
             if(A && (~B)){
                 QEI_count--;
                 E = CCW_10;
-            }
-            if((~A) && B){
+            } if((~A) && B){
                 QEI_count++;
                 E = CW_01;
+            }
+            break;
+        default:
+            printf("Error: Encoder State should never default\n");
+            break;
+    }
+}*/
+
+void QEI_SM(void){
+    switch(S){
+        case ONE:
+            if(A && ~B){
+                D = FWD;
+                QEI_count++;
+                S = TWO;
+            } if(~A && B){
+                D = BWD;
+                QEI_count--;
+                S = FOUR;
+            }
+            break;
+        case TWO:
+            if(A && B){
+                D = FWD;
+                QEI_count++;
+                S = THREE;
+            } if(~A && ~B){
+                D = BWD;
+                QEI_count--;
+                S = ONE;
+            }
+            break;
+        case THREE:
+            if(~A && B){
+                D = FWD;
+                QEI_count++;
+                S = FOUR;
+            } if(A && ~B){
+                D = BWD;
+                QEI_count--;
+                S = TWO;
+            }
+            break;
+        case FOUR:
+            if(~A && ~B){
+                D = FWD;
+                QEI_count++;
+                S = ONE;
+            } if(A && B){
+                D = BWD;
+                QEI_count--;
+                S = THREE;
             }
             break;
         default:

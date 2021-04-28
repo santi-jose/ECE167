@@ -5,10 +5,8 @@
  * Created on April 26, 2021, 2:58 AM
  */
 
-#include <proc/p32mx340f512h.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/attribs.h>
 #include <xc.h>
 
 #include "BOARD.h"
