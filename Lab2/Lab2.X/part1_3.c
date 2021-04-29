@@ -14,9 +14,9 @@
 #include "QEI.h"
 #include "timers.h"
 
-#define RED_PIN PWM_PORTY04
-#define GREEN_PIN PWM_PORTY12
-#define BLUE_PIN PWM_PORTZ06
+#define PIN_9 PWM_PORTY04
+#define PIN_5 PWM_PORTY12
+#define PIN_3 PWM_PORTZ06
 
 /*
  * 
@@ -31,9 +31,9 @@ int main(void)
     TIMERS_Init();
     
     //set PWM to light led
-    PWM_AddPins(RED_PIN); //pin 9 (RED)
-    PWM_AddPins(GREEN_PIN); //pin 5 (GREEN)
-    PWM_AddPins(BLUE_PIN); //pin 3 (BLUE)
+    PWM_AddPins(PIN_9); //pin 9 (RED)
+    PWM_AddPins(PIN_5); //pin 5 (GREEN)
+    PWM_AddPins(PIN_3); //pin 3 (BLUE)
     
     //integers to store Duty Cycle of RGB
     int R_DC = 0;
@@ -155,16 +155,16 @@ int main(void)
         } 
         
         //active low since we are sinking current through LED
-        PWM_SetDutyCycle(RED_PIN, R_DC); //R
-        PWM_SetDutyCycle(GREEN_PIN, G_DC); //G
-        PWM_SetDutyCycle(BLUE_PIN, B_DC); //B
-        
-        R = R_DC/1000;
-        G = G_DC/1000;
-        B = B_DC/1000;
+        PWM_SetDutyCycle(PIN_9, R_DC); //R
+        PWM_SetDutyCycle(PIN_5, G_DC); //G
+        PWM_SetDutyCycle(PIN_3, B_DC); //B
+                
+        R = R_DC/1000.0; //R duty cycle in decimal
+        G = G_DC/1000.0; //G duty cycle in decimal
+        B = B_DC/1000.0; //B duty cycle in decimal
         
         sprintf(oled_str, 
-                "RGB: %.2f %.2f %.2f\n"
+                "RGB: %.2f, %.2f, %.2f\n"
                 "QEI degrees: %d\n"
                 , R, G, B, d);
         
