@@ -80,9 +80,8 @@ char PING_Init(void) {
  * @return      distance in mm
  */
 unsigned int PING_GetDistance(void){
-    d = (t2 - t1)/1000;
-    d = d * 340;
-    d = d >> 1;
+    d = (((PING_GetTimeofFlight())*(340))/1000) >> 1; //calculate distance
+    d = (1.01*d) - 395; //linearize distance from least squares
     return d;
 }
 
@@ -93,7 +92,7 @@ unsigned int PING_GetDistance(void){
  * @return      time of flight in uSec
  */
 unsigned int PING_GetTimeofFlight(void){
-    td = t2 - t1;
+    td = t2 - t1; //calculate time of flight
     return td;
 }
 
@@ -108,14 +107,12 @@ void PING_SM(void){
         case WAIT:
             PR4 = 37500; //set PM4 to 60ms
             T = 0; //set the trigger pin low for 60ms
-            //printf("WAIT: %d, T: %d\n", PR4, T);
             S = PULSE; //change state to PULSE
             break;
         case PULSE:
             PR4 = 7; //set PM4 to 10us
             T = 1; //set the trigger pin high for 10us
-            t1 = TIMERS_GetMicroSeconds(); //store time
-            //printf("PULSE: %d, T: %d\n", PR4, T);
+            t1 = TIMERS_GetMicroSeconds(); //store time pulse is triggered
             S = WAIT; //change state to WAIT
             break;
     }
@@ -127,15 +124,14 @@ void __ISR(_CHANGE_NOTICE_VECTOR) ChangeNotice_Handler(void) {
     IFS1bits.CNIF = 0; 
     
     //Anything else that needs to occur goes here
-    t2 = TIMERS_GetMicroSeconds();
-    //printf("Echo received: %d\n", TMR4);
+    t2 = TIMERS_GetMicroSeconds //store time echo is received
 }
   
 void __ISR(_TIMER_4_VECTOR) Timer4IntHandler(void) {
     IFS0bits.T4IF = 0;
     
     //Anything else that needs to occur goes here
-    PING_SM();
+    PING_SM(); //call PING state machine
 }
            
  
