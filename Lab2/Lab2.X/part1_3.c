@@ -12,11 +12,10 @@
 #include "Oled.h"
 #include "pwm.h"
 #include "QEI.h"
-#include "timers.h"
 
-#define PIN_9 PWM_PORTY04
-#define PIN_5 PWM_PORTY12
-#define PIN_3 PWM_PORTZ06
+#define PIN_9 PWM_PORTY04 //pin 9 RED
+#define PIN_5 PWM_PORTY12 //pin 5 GREEN
+#define PIN_3 PWM_PORTY10 //pin 6 BLUE
 
 /*
  * 
@@ -28,7 +27,6 @@ int main(void)
     OledInit();
     PWM_Init();
     QEI_Init();
-    TIMERS_Init();
     
     //set PWM to light led
     PWM_AddPins(PIN_9); //pin 9 (RED)

@@ -28,9 +28,9 @@ typedef enum{
     TWO,
     THREE,
     FOUR
-}STATE;
+}QSTATE;
 
-STATE S;
+QSTATE S;
 static int QEI_count; //keep track of the count during the encoder's rotation
 
 /**
@@ -52,11 +52,11 @@ char QEI_Init(void){
     IEC1bits.CNIE = 1; // enable change notify
     
     //add stuff
-    TRISDbits.TRISD6 = 1;
-    TRISDbits.TRISD7 = 1;
+    TRISDbits.TRISD6 = 1; //set pin 36 as input
+    TRISDbits.TRISD7 = 1; //set pin 37 as output
     QEI_count = 0; //set QEI_Count to 0
-    S = THREE; 
-    return SUCCESS;
+    S = THREE; //start at state THREE
+    return SUCCESS; //return SUCCESS
 }
 
 /**
@@ -82,7 +82,7 @@ void QEI_ResetPosition(){
 
 /*
  * @Function QEI_SM(enum DIR)
- * @param enum DIR
+ * @param none
  * @return none
  * @brief State machine for directional states of encoder
  */
