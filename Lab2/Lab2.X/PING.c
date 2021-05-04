@@ -124,7 +124,7 @@ void __ISR(_CHANGE_NOTICE_VECTOR) ChangeNotice_Handler(void) {
     IFS1bits.CNIF = 0; 
     
     //Anything else that needs to occur goes here
-    t2 = TIMERS_GetMicroSeconds //store time echo is received
+    t2 = TIMERS_GetMicroSeconds(); //store time echo is received
 }
   
 void __ISR(_TIMER_4_VECTOR) Timer4IntHandler(void) {

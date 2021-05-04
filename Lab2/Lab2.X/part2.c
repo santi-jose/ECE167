@@ -30,13 +30,13 @@ int main(void)
     unsigned int d; //distance variable
     char oled_str[100]; //oled_str
     unsigned int t; //time variable
-    unsigned int h_buff[100]; //distance buffer
+    unsigned int h_buff[50]; //distance buffer
     unsigned int h_avg; //average distance from distance buffer
     unsigned int ph_avg; //previous h_avg value
     unsigned int d_p; //previous distance value
     int h_i = 0; //d_buff index variable
     int h; //variable to store frequency
-    int p_h;
+    int h_p; //previous Hertz variable
     
     while(1){
         OledClear(OLED_COLOR_BLACK);
@@ -47,29 +47,39 @@ int main(void)
         tf = PING_GetTimeofFlight();
         d = PING_GetDistance();
         
-        if(((abs(d - d_p)) < 10)){//don't track changes less than 10mm in distance
+        if(((abs(d - d_p)) < 10) || ((abs(d - d_p)) > 2000)){//don't track changes less than 10mm in distance
             d = d_p; 
         }
         d_p = d;
-                
+        
         //convert distance to frequency
         h = (d*1000)/2000;
         if(h > 1000){ // frequency ceiling
             h = 1000;
         }
+            
+        if(((abs(h - h_p)) > 500) || ((abs(h - h_p)) < 10)){ //if our change in Hz is greater than 500
+            h = h_p;
+        }
+        h_p = h;
         
         //software filtering
-        h_buff[h_i%100] = h; //store current frequency into H_buff
+        h_buff[h_i%50] = h; //store current frequency into H_buff
         h_i++; //increment h_buff index variable
         int i; //declare i index to iterate through h_buff
-        for(i = 0; i < 100; i++){ //add up all values in h_buff
+        for(i = 0; i < 50; i++){ //add up all values in h_buff
             h_avg = h_avg + h_buff[i];
         }
-        h_avg = h_avg/100; //take average of h_buff values
+        h_avg = h_avg/50; //take average of h_buff values
         
         if(h_avg > 1000){ //h_avg ceiling 
             h_avg = 1000;
         }
+        
+        if((abs(h_avg - ph_avg)) < 3){ //if our change in Hz is greater than 500
+            h_avg = ph_avg;
+        }
+        ph_avg = h_avg;
         
         ToneGeneration_SetFrequency(h_avg); //set tone frequency
         
