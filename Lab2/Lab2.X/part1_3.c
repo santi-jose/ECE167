@@ -47,7 +47,7 @@ int main(void)
     while(1){ //infinite loop
         OledClear(OLED_COLOR_BLACK);
         q = QEI_GetPosition(); //QEI_count
-        d = abs((q*15)%360); //angle of revolution of QEI
+        d = ((abs(q)*(15))%360); //angle of revolution of QEI
         
         //check degrees and set color accordingly
         if(d == 0){ //yellow
@@ -165,6 +165,10 @@ int main(void)
                 "RGB: %.2f, %.2f, %.2f\n"
                 "QEI degrees: %d\n"
                 , R, G, B, d);
+        
+        printf("RGB: %.2f, %.2f, %.2f\n", R, G, B);
+        printf("QEI degrees: %d\n", d);
+        printf("QEI count: %d\n", q);
         
         OledDrawString(oled_str);
         OledUpdate();

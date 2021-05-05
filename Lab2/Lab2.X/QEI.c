@@ -107,9 +107,11 @@ void QEI_SM(void){
             break;
         case THREE:
             if(~A && B){ //forward
+                //QEI_count++;
                 S = FOUR;
             }
             if(A && ~B){ //backward
+                //QEI_count--;
                 S = TWO;
             }
             break;

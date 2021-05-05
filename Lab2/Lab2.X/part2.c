@@ -47,7 +47,11 @@ int main(void)
         tf = PING_GetTimeofFlight();
         d = PING_GetDistance();
         
-        if(((abs(d - d_p)) < 10) || ((abs(d - d_p)) > 2000)){//don't track changes less than 10mm in distance
+        //if(d > 2000){ //2000mm is our max distance
+        //    d = 2000;
+        //}
+        
+        if(((abs(d - d_p)) < 10)){// || ((abs(d - d_p)) > 1000)){//don't track changes less than 10mm in distance
             d = d_p; 
         }
         d_p = d;
@@ -58,7 +62,7 @@ int main(void)
             h = 1000;
         }
             
-        if(((abs(h - h_p)) > 500) || ((abs(h - h_p)) < 10)){ //if our change in Hz is greater than 500
+        if(((abs(h - h_p)) < 10)){//|| ((abs(h - h_p)) > 500)){ //if our change in Hz is greater than 500
             h = h_p;
         }
         h_p = h;
@@ -76,7 +80,7 @@ int main(void)
             h_avg = 1000;
         }
         
-        if((abs(h_avg - ph_avg)) < 3){ //if our change in Hz is greater than 500
+        if((abs(h_avg - ph_avg)) < 5){ //if our change in Hz is greater than 500
             h_avg = ph_avg;
         }
         ph_avg = h_avg;
