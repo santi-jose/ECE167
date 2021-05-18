@@ -4,7 +4,7 @@
 %Call functions
 
 %store simulated data
-[Anoise,Hnoise,Adist,Bdist] = CreateTumbleData(1500);
+[Anoise,Hnoise,Adist,Bdist] = CreateTumbleData(5000);
 
 %store accelerometer x y and z data
 A_X = Anoise(:,1);
@@ -214,6 +214,7 @@ subplot(2,1,2)
 plot(N_H,'.')
 title('Norm of Magnetometer Data: Pre-Naive Calibration')
 
+%{
 figure(2)
 histfit(N_C_H);
 title('Normal Distribution of Norm of Magnetometer: Post-Naive Calibration')
@@ -221,8 +222,9 @@ title('Normal Distribution of Norm of Magnetometer: Post-Naive Calibration')
 figure(3)
 histfit(N_H);
 title('Normal Distribution of Norm of Magnetometer: Pre-Naive Calibration')
+%}
 
-figure(4)
+figure(2)
 subplot(2,1,1)
 plot(N_C_A,'.')
 title('Norm of Acceleration Data: Post-Naive Calibration')
@@ -231,6 +233,7 @@ subplot(2,1,2)
 plot(N_A,'.')
 title('Norm of Acceleration Data: Pre-Naive Calibration')
 
+%{
 figure(5)
 histfit(N_C_A);
 title('Normal Distribution of Norm of Acceleration: Post- NaiveCalibration')
@@ -238,31 +241,40 @@ title('Normal Distribution of Norm of Acceleration: Post- NaiveCalibration')
 figure(6)
 histfit(N_A);
 title('Normal Distribution of Norm of Acceleration: Pre-Naive Calibration')
+%}
 
-figure(7)
+figure(3)
 plot3(C_H_X, C_H_Y, C_H_Z,'.')
+hold on
+plot3(Xcorr_H, Ycorr_H, Zcorr_H,'.');
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
-title('3-D Magnetometer Data: Naive Calibration')
+legend('Naive Calibration','LS Calibration')
+title('3-D Magnetometer Data')
 
-figure(8)
+figure(4)
 plot3(C_A_X, C_A_Y, C_A_Z, '.')
+hold on
+plot3(Xcorr_A, Ycorr_A, Zcorr_A,'.');
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
-title('3-D Accelerometer Data: Naive Calibration')
+legend('Naive Calibration','LS Calibration')
+title('3-D Accelerometer Data')
 
 %LS calibration
 %Acceleration LS calibration
+%{
 figure(9)
 plot3(Xcorr_A, Ycorr_A, Zcorr_A,'.');
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
 title('3-D Accelerometer Data: LS Calibration')
+%}
 
-figure(10)
+figure(5)
 subplot(2,1,1)
 plot(N_EU_A,'.')
 title('Norm of Acceleration Data: Pre-LS Calibration')
@@ -271,23 +283,27 @@ subplot(2,1,2)
 plot(N_LS_A,'.')
 title('Norm of Acceleration Data: Post-LS Calibration')
 
-figure(11)
+%{
+figure(10)
 histfit(N_EU_A);
 title('Normal Distribution of Norm of Acceleration: Pre-LS Calibration')
 
-figure(12)
+figure(11)
 histfit(N_LS_A);
 title('Normal Distribution of Norm of Acceleration: Post-LS Calibration')
+%}
 
 %Magnetometer LS calibration
+%{
 figure(13)
 plot3(Xcorr_H, Ycorr_H, Zcorr_H,'.');
 xlabel('X')
 ylabel('Y')
 zlabel('Z')
 title('3-D Magnetometer Data: LS Calibration')
+%}
 
-figure(14)
+figure(6)
 subplot(2,1,1)
 plot(N_EU_H,'.')
 title('Norm of Magnetometer Data: Pre-LS Calibration')
@@ -296,10 +312,12 @@ subplot(2,1,2)
 plot(N_LS_H,'.')
 title('Norm of Magnetometer Data: Post-LS Calibration')
 
-figure(15)
+%{
+figure(13)
 histfit(N_EU_H);
 title('Normal Distribution of Norm of Magnetometer: Pre-LS Calibration')
 
-figure(16)
+figure(14)
 histfit(N_LS_H);
 title('Normal Distribution of Norm of Magnetometer: Post-LS Calibration')
+%}

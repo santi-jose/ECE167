@@ -82,13 +82,14 @@ zlabel('Z Acceleration (g)')
 title('Acceleration Post-Calibration')
 
 figure(3)
+subplot(2,1,1)
 plot(N_A, '.')
-title('Acceleration Norm Pre-Calibration')
-
-figure(4)
+title('Acceleration: Pre Calibration')
+subplot(2,1,2)
 plot(C_N_A, '.')
-title('Acceleration Norm Post-Calibration')
+title('Acceleration Norm: Post Calibration')
 
+%{
 figure(5)
 histfit(N_A)
 title('Acceleration Normal Distribution: Pre-Calibration')
@@ -96,9 +97,10 @@ title('Acceleration Normal Distribution: Pre-Calibration')
 figure(6)
 histfit(C_N_A)
 title('Acceleration Normal Distribution: Post Calibration')
+%}
 
 %Plot magnetometer stuff
-figure(7)
+figure(4)
 %subplot(1,2,1)
 plot3(H_X, H_Y, H_Z, '.')
 xlabel('X Magnetometer')
@@ -106,7 +108,7 @@ ylabel('Y Magnetometer')
 zlabel('Z Magnetometer')
 title('Magnetometer Pre-Calibration')
 
-figure(8)
+figure(5)
 %subplot(1,2,2)
 plot3(C_A_X, C_A_Y, C_A_Z, '.')
 xlabel('X Magnetometer')
@@ -114,14 +116,15 @@ ylabel('Y Magnetometer')
 zlabel('Z Magnetometer')
 title('Magnetometer Post-Calibration')
 
-figure(9)
+figure(6)
+subplot(2,1,1)
 plot(N_H, '.')
-title('Magnetometer Norm Pre-Calibration')
-
-figure(10)
+title('Magnetometer Norm: Pre-Calibration')
+subplot(2,1,2)
 plot(C_N_H, '.')
-title('Magnetometer Norm Post-Calibration')
+title('Magnetometer Norm: Post-Calibration')
 
+%{
 figure(11)
 histfit(N_H)
 title('Magnetometer Normal Distribution: Pre-Calibration')
@@ -129,3 +132,4 @@ title('Magnetometer Normal Distribution: Pre-Calibration')
 figure(12)
 histfit(C_N_H)
 title('Magnetometer Normal Distribution: Post Calibration')
+%}
