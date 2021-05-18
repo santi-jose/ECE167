@@ -8,6 +8,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "BOARD.h"
+#include "ICM20948.h"
+#include "timers.h"
+
 /*
  * 
  */
@@ -25,20 +29,15 @@ int main(void)
     
     while(1){ //infinite loop
         t = TIMERS_GetMilliSeconds();
-        g_Z = ICM20948_ReadGyroZ();
         g_X = ICM20948_ReadGyroX();
         g_Y = ICM20948_ReadGyroY();
-        
+        g_Z = ICM20948_ReadGyroZ();
+ 
         //print data to terminal
         if((t%20) == 0){ //every 20ms, 50 times a second(50Hz)
             printf("%d, %d, %d\r\n", g_X, g_Y, g_Z);
         }
-        //printf("m_Y: %d\r\n", m_Y);
-        //printf("m_Z: %d\r\n", m_Z);
         
-        //while((t%3000)!=0){
-        //    t = TIMERS_GetMilliSeconds();
-        //}
     }
 
     while(1);

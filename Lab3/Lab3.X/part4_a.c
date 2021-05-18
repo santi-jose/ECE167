@@ -20,15 +20,15 @@ int main(void)
     BOARD_Init();
     ICM20948_Init();
     
-    int a_Z; //variable to store Z acceleration
     int a_X; //variable to store X acceleration
     int a_Y; //variable to store Y acceleration
+    int a_Z; //variable to store Z acceleration
     
     while(1){ //infinite loop
         //t = TIMERS_GetMilliSeconds();
-        a_Z = ICM20948_ReadAccelZ();
         a_X = ICM20948_ReadAccelX();
         a_Y = ICM20948_ReadAccelY();
+        a_Z = ICM20948_ReadAccelZ();
         
         //print data to terminal
         printf("a_X: %d\r\n", a_X);

@@ -20,18 +20,18 @@ int main(void)
     //initializations
     BOARD_Init();
     ICM20948_Init();
-    TIMERS_Init();
+    //TIMERS_Init();
     
-    int m_Z; //variable to store Z magnetometer reading
     int m_X; //variable to store X magnetometer reading
     int m_Y; //variable to store Y magnetometer reading
-    int t; //time variable
+    int m_Z; //variable to store Z magnetometer reading
+    //int t; //time variable
     
     while(1){ //infinite loop
-        t = TIMERS_GetMilliSeconds();
-        m_Z = ICM20948_ReadMagZ();
+        //t = TIMERS_GetMilliSeconds();
         m_X = ICM20948_ReadMagX();
         m_Y = ICM20948_ReadMagY();
+        m_Z = ICM20948_ReadMagZ();
         
         //print data to terminal
         printf("%d, %d, %d\r\n", m_X, m_Y, m_Z);
