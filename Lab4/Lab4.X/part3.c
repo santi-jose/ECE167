@@ -11,14 +11,7 @@
 
 #include "BOARD.h"
 #include "MatrixMath.h"
-
-/*helper functions*/
-//helper function
-void DCM2Euler(float M[3][3], float* y, float* p, float* r){
-    *y = atan(M[0][1]/M[0][0]) * 57.2958; //calculate yaw in degrees
-    *p = asin((-1)*(M[0][2])) * 57.2958;  //calculate pitch in degrees
-    *r = atan(M[1][2]/M[2][2]) * 57.2958; //calculate roll in degrees
-}
+#include "Lab4_HelpFuncs.h"
 
 /*
  * 

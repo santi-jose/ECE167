@@ -21,12 +21,20 @@ void MatrixPrint(float mat[3][3])
     int i = 0;
     int j = 0;
     for (i = 0; i < 3; i++) {
+        printf("--------------------------------\n");
+        fflush(stdout);
+        printf("||");
         for (j = 0; j < 3; j++) {
-            printf("%4.2f\t", (double) mat[i][j]); //print single element of matrix
+            fflush(stdout);
+            printf("%8.4f", (double) mat[i][j]); //print single element of matrix
+            fflush(stdout);
+            printf("||");
         }
         printf("\n");
     }
+    printf("--------------------------------");
     printf("\n");
+    fflush(stdout);
 }
 
 //Function takes two matrix pointers for arguments and returns 1 if they're equal, 0 otherwise
@@ -68,9 +76,12 @@ void MatrixMultiply(float mat1[3][3], float mat2[3][3], float result[3][3])
     //nest for loops to iterate through matrices
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
+            float sum = 0;
             for (k = 0; k < 3; k++) {
-                result[i][j] = (mat1[i][k] * mat2[k][j]) + result[i][j]; //perform and store matrix multiplication into resultant matrix  
+                sum = (mat1[i][k] * mat2[k][j]) + sum;
+                //result[i][j] = (mat1[i][k] * mat2[k][j]) + result[i][j]; //perform and store matrix multiplication into resultant matrix 
             }
+            result[i][j] = sum;
         }
     }
 }
