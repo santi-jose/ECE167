@@ -132,6 +132,13 @@ void MatrixScalarAdd(float x, float mat[3][3], float result[3][3])
     }
 }
 
+void VectorScalarAdd(float x, float vec[3][1], float result[3][1]){
+    int i;
+    for(i = 0; i < 3; i++){
+        result[i][0] = x + vec[i][0]; //scalar addition
+    }
+}
+
 //function performs scalar multiplication on matrix
 void MatrixScalarMultiply(float x, float mat[3][3], float result[3][3])
 {

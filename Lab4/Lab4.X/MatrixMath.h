@@ -125,6 +125,17 @@ void VectorMatrixMultiply(float vec[3][1], float mat[3][3], float result[3][1]);
 void MatrixScalarAdd(float x, float mat[3][3], float result[3][3]);
 
 /**
+ * VectorScalarAdd performs the addition of a vector and a scalar.  Each element of the vector is increased by x.
+ * The result is "returned"by modifying the third argument.
+ * @param: x, a scalar float
+ * @param: vec, pointer to right factor 3x1 matrix
+ * @param: result, pointer to vector that is modified to contain vec + x.
+ * @return: none
+ * x and vec are not modified by this function.  result is modified by this function.
+ */
+void VectorScalarAdd(float x, float vec[3][1], float result[3][1]);
+
+/**
  * MatrixScalarMultipy performs the multiplication of a matrix and a scalar.
  * Each element of the matrix is multiplied x.
  * The result is "returned"by modifying the third argument.
