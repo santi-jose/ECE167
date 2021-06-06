@@ -16,7 +16,7 @@
  * @param: M, pointer to a 3x3 float array. y, p, and r pointers to float variables.
  * @return: none
  */
-void DCM2Euler(float M[3][3], float* y, float* p, float* r);
+void DCM2Euler(float M[3][3], float Eul[3][1]);//float* y, float* p, float* r);
 
 /*
  * rcross forms the skew symmetric x-product matrix of a 3x1 vector.  

@@ -20,11 +20,15 @@
  * @param: M, pointer to a 3x3 float array. y, p, and r pointers to float variables.
  * @return: none
  */
-void DCM2Euler(float M[3][3], float* y, float* p, float* r){
-    
+void DCM2Euler(float M[3][3], float Eul[3][1]){ //float* y, float* p, float* r){
+    Eul[0][0] = atan2(M[0][1],M[0][0]) * 57.2958; //calculate yaw in degrees
+    Eul[1][0] = asin((-1)*(M[0][2])) * 57.2958;  //calculate pitch in degrees
+    Eul[2][0] = atan2(M[1][2],M[2][2]) * 57.2958; //calculate roll in degrees
+    /*
     *y = atan2(M[0][1],M[0][0]) * 57.2958; //calculate yaw in degrees
     *p = asin((-1)*(M[0][2])) * 57.2958;  //calculate pitch in degrees
     *r = atan2(M[1][2],M[2][2]) * 57.2958; //calculate roll in degrees
+    */
 }
 
 /*
@@ -136,19 +140,19 @@ void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[
     //set mags and accels to unit vectors
     //accels = accels/norm(accels)
     //mags = mags/norm(mags)
-    VectorScalarMultiply(1/(sqrt(pow(a[0][0],2)+pow(a[1][0],2)+pow(a[2][0],2))),a,a);
-    VectorScalarMultiply(1/(sqrt(pow(m[0][0],2)+pow(m[1][0],2)+pow(m[2][0],2))),m,m);
+    VectorScalarMultiply(1.0/(sqrt(pow(a[0][0],2)+pow(a[1][0],2)+pow(a[2][0],2))),a,a);
+    VectorScalarMultiply(1.0/(sqrt(pow(m[0][0],2)+pow(m[1][0],2)+pow(m[2][0],2))),m,m);
     
     //set inertial reference vectors
     //magInertial = magInertial/norm(magInertial)
     //accelInertial = accelInertial/norm(accelInertial)
-    VectorScalarMultiply(1/(sqrt(pow(mI[0][0],2)+pow(mI[1][0],2)+pow(mI[2][0],2))),mI,mI);
-    VectorScalarMultiply(1/(sqrt(pow(aI[0][0],2)+pow(aI[1][0],2)+pow(aI[2][0],2))),aI,aI);
+    VectorScalarMultiply(1.0/(sqrt(pow(mI[0][0],2)+pow(mI[1][0],2)+pow(mI[2][0],2))),mI,mI);
+    VectorScalarMultiply(1.0/(sqrt(pow(aI[0][0],2)+pow(aI[1][0],2)+pow(aI[2][0],2))),aI,aI);
     
     //gyroInputWithBias = gyros - Bminus
     float gIWB[3][1] = {};
     float _Bm[3][1] = {}; 
-    VectorScalarMultiply(-1,Bm,_Bm); //-Bm
+    VectorScalarMultiply(-1.0,Bm,_Bm); //-Bm
     VectorAdd(g, _Bm, gIWB);
     
     //ax = rcross(accels)
@@ -193,17 +197,17 @@ void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[
     float gIWF[3][1] = {};
     VectorAdd(gIWB, Kp_a_wm_a_Kp_m_wm_m, gIWF);
     
-    //Ki_a_wm_a = -(Ki_a * wmeas_a)
-    float Ki_a_wm_a[3][1] = {};
-    VectorScalarMultiply(((-1)*Ki_a), wmeas_a, Ki_a_wm_a);
+    //_Ki_a_wm_a = -(Ki_a * wmeas_a)
+    float _Ki_a_wm_a[3][1] = {};
+    VectorScalarMultiply(((-1.0)*Ki_a), wmeas_a, _Ki_a_wm_a);
     
-    //Ki_m_wm_m = -(Ki_m * wmeas_m)
-    float Ki_m_wm_m[3][1] = {};
-    VectorScalarMultiply(((-1)*Ki_m), wmeas_m, Ki_m_wm_m);
+    //_Ki_m_wm_m = -(Ki_m * wmeas_m)
+    float _Ki_m_wm_m[3][1] = {};
+    VectorScalarMultiply(((-1.0)*Ki_m), wmeas_m, _Ki_m_wm_m);
     
     //bdot = -(Ki_a * wmeas_a) - Ki_m * wmeas_m
     float bdot[3][1];
-    VectorAdd(Ki_a_wm_a, Ki_m_wm_m, bdot);
+    VectorAdd(_Ki_a_wm_a, _Ki_m_wm_m, bdot);
     
     //R_exp = Rexp(gyroInputWithFeedback, deltaT)
     float R_exp[3][3] = {};
