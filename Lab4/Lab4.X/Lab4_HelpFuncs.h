@@ -44,5 +44,14 @@ void Rexp(float w[3][1], float deltaT, float R_exp[3][3]);
  */
 void IntegrateOpenLoop(float Rminus[3][3], float G[3][1], float deltaT, float Rplus[3][3]);
 
+/*
+ * IntegrateClosedLoop integrates the gyros to attitude DCM.  
+ * @param: Rminus, pointer to a 3x3 float array. G, pointer to a 3x1  float array.
+ * deltaT, float variable. Rplus, pointer to a 3x3 float array.
+ * @return: none
+ */
+void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[3][1], 
+                         float a[3][1], float mI[3][1], float aI[3][1], float dT,
+                         float Rp[3][3], float Bp[3][1]);
 
 #endif // LAB4_HELPFUNCS_H

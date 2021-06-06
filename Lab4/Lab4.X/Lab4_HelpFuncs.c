@@ -21,9 +21,15 @@
  * @return: none
  */
 void DCM2Euler(float M[3][3], float* y, float* p, float* r){
-    *y = atan(M[0][1]/M[0][0]) * 57.2958; //calculate yaw in degrees
+    
+    *y = atan2(M[0][1],M[0][0]) * 57.2958; //calculate yaw in degrees
     *p = asin((-1)*(M[0][2])) * 57.2958;  //calculate pitch in degrees
-    *r = atan(M[1][2]/M[2][2]) * 57.2958; //calculate roll in degrees
+    *r = atan2(M[1][2],M[2][2]) * 57.2958; //calculate roll in degrees
+    /*
+    *r = atan2(M[1][2],M[2][2]) * 57.2958;
+    *p = atan2((-1)*M[0][2],sqrt(pow(M[0][0],2)+pow(M[0][1],2))) * 57.2958;
+    *y = atan2(sin(*r)*M[2][0]-cos(*r)*M[1][0],cos(*r)*M[1][1]-sin(*r)*M[2][1]) * 57.2958;
+    */
 }
 
 /*
@@ -130,4 +136,137 @@ void IntegrateOpenLoop(float Rminus[3][3], float G[3][1], float deltaT, float Rp
         MatrixScalarMultiply((-1)*deltaT, Gx_Rminus, Gx_Rminus); //multiply by (-)deltaT
         MatrixAdd(Rminus, Gx_Rminus, Rplus); //Rplus = Rminus - Gx*Rminus*deltaT
     }
+}
+
+void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[3][1], 
+                         float a[3][1], float mI[3][1], float aI[3][1], float dT,
+                         float Rp[3][3],float Bp[3][1]){
+    float Kp_a = 10;
+    float Ki_a = Kp_a/10;
+    
+    float Kp_m = 10;
+    float Ki_m = Kp_m/10;
+    
+    //set mags and accels to unit vectors
+    //accels = accels/norm(accels)
+    //mags = mags/norm(mags)
+    VectorScalarMultiply(1/(sqrt(pow(a[0][0],2)+pow(a[1][0],2)+pow(a[2][0],2))),a,a);
+    VectorScalarMultiply(1/(sqrt(pow(m[0][0],2)+pow(m[1][0],2)+pow(m[2][0],2))),m,m);
+    //VectorPrint(a);
+    //VectorPrint(m);
+    
+    //set inertial reference vectors
+    //magInertial = magInertial/norm(magInertial)
+    //accelInertial = accelInertial/norm(accelInertial)
+    VectorScalarMultiply(1/(sqrt(pow(mI[0][0],2)+pow(mI[1][0],2)+pow(mI[2][0],2))),mI,mI);
+    VectorScalarMultiply(1/(sqrt(pow(aI[0][0],2)+pow(aI[1][0],2)+pow(aI[2][0],2))),aI,aI);
+    //VectorPrint(mI);
+    //VectorPrint(aI);
+    
+    //gyroInputWithBias = gyros - Bminus
+    float gIWB[3][1] = {};
+    float _Bm[3][1] = {}; 
+    VectorScalarMultiply(-1,Bm,_Bm); //-Bm
+    //VectorPrint(Bm);
+    VectorAdd(g, _Bm, gIWB);
+    //VectorPrint(gIWB);
+    
+    //ax = rcross(accels)
+    float ax[3][3] = {};
+    rcross(a, ax);
+    //MatrixPrint(ax);
+    
+    //Rm_aI = Rminus * accelInertial
+    float Rm_aI[3][1] = {};
+    //printf("aI:\n");
+    //VectorPrint(aI);
+    //printf("Rm:\n");
+    //MatrixPrint(Rm);
+    VectorMatrixMultiply(aI, Rm, Rm_aI);
+    //printf("Rm_aI:\n");
+    //VectorPrint(Rm_aI);
+    
+    //accelerometer correction in the body frame
+    //wmeas_a = (rcross(accels)) * (Rminus * accelInertial)
+    float wmeas_a[3][1] = {};
+    VectorMatrixMultiply(Rm_aI, ax, wmeas_a);
+    //printf("wmeas_a:\n");
+    //VectorPrint(wmeas_a);
+    
+    //mx = rcross(mags)
+    float mx[3][3] = {};
+    rcross(m, mx);
+    //printf("mx:\n");
+    //MatrixPrint(mx);
+    
+    //Rm_mI = Rminus * magInertial
+    float Rm_mI[3][1] = {};
+    VectorMatrixMultiply(mI, Rm, Rm_mI);
+    //printf("Rm_mI:\n");
+    //VectorPrint(Rm_mI);
+    
+    //magnetometer correction in the body frame
+    //wmeas_m = (rcross(mags)) * (Rminus * magInertial)
+    float wmeas_m[3][1] = {};
+    VectorMatrixMultiply(Rm_mI, mx, wmeas_m);
+    //printf("wmeas_m:\n");
+    //VectorPrint(wmeas_m);
+    
+    //Kp_a_wmeas_a = Kp_a * wmeas_a
+    float Kp_a_wmeas_a[3][1] = {};
+    VectorScalarMultiply(Kp_a, wmeas_a, Kp_a_wmeas_a);
+    
+    
+    //Kp_m_wmeas_w = Kp_m * wmeas_m
+    float Kp_m_wmeas_m[3][1] = {};
+    VectorScalarMultiply(Kp_m, wmeas_m, Kp_m_wmeas_m);    
+    
+    //Kp_a_wm_a_Kp_m_wm_m = Kp_a_wm_a + Kp_m_wm_m
+    float Kp_a_wm_a_Kp_m_wm_m[3][1] = {};
+    VectorAdd(Kp_a_wmeas_a, Kp_m_wmeas_m, Kp_a_wm_a_Kp_m_wm_m);
+    
+    //gyroInputWithFeedback = gyroInputWithBias + Kp_a*wmeas_a + Kp_m*wmeas_m
+    float gIWF[3][1] = {};
+    VectorAdd(gIWB, Kp_a_wm_a_Kp_m_wm_m, gIWF);
+    //VectorPrint(gIWF);
+    
+    //Ki_a_wm_a = -(Ki_a * wmeas_a)
+    float Ki_a_wm_a[3][1] = {};
+    VectorScalarMultiply(((-1)*Ki_a), wmeas_a, Ki_a_wm_a);
+    
+    //Ki_m_wm_m = -(Ki_m * wmeas_m)
+    float Ki_m_wm_m[3][1] = {};
+    VectorScalarMultiply(((-1)*Ki_m), wmeas_m, Ki_m_wm_m);
+    
+    //bdot = -(Ki_a * wmeas_a) - Ki_m * wmeas_m
+    float bdot[3][1];
+    VectorAdd(Ki_a_wm_a, Ki_m_wm_m, bdot);
+    printf("bdot:\n");
+    //VectorPrint(bdot);
+    
+    //R_exp = Rexp(gyroInputWithFeedback, deltaT)
+    printf("dT: %f\n",dT);
+    printf("gIWF:\n");
+    VectorPrint(gIWF);
+    float R_exp[3][3] = {};
+    Rexp(gIWF, dT, R_exp);
+    printf("dt: %f\n",dT);
+    //printf("R_exp:\n");
+    //MatrixPrint(R_exp);
+    
+    //Rplus = (Rexp(gyroInputWithFeedback, deltaT)) * Rminus;
+    MatrixMultiply(R_exp, Rm, Rp);
+    printf("Rp:\n");
+    MatrixPrint(Rp);
+    
+    //bd_dT = bdot*deltaT
+    float bd_dT[3][1] = {};
+    VectorScalarMultiply(dT, bdot, bd_dT);
+    printf("bd_dT:\n");
+    VectorPrint(bd_dT);
+    
+    //Bplus = Bminus + (bdot*deltaT)
+    VectorAdd(Bm, bd_dT, Bp);
+    printf("Bp:\n");
+    VectorPrint(Bp);
 }
