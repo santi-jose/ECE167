@@ -38,6 +38,17 @@
  */
 void MatrixPrint(float mat[3][3]);
 
+/**
+ * VectorPrint displays a 3x1 array to standard output with clean, readable, 
+ * consistent formatting.  
+ * @param: vec, pointer to a 3x1 float vector
+ * @return: none
+ * The printed vector should be aligned in a grid when called with positive or
+ *  negative numbers.  It should be able to display at least FP_DELTA precision, and
+ *  should handle numbers as large as 999.0 or -999.0
+ */
+void VectorPrint(float vec[3][1]);
+
 
 /******************************************************************************
  * Matrix - Matrix Operations
@@ -64,6 +75,17 @@ int MatrixEquals(float mat1[3][3], float mat2[3][3]);
 void MatrixAdd(float mat1[3][3], float mat2[3][3], float result[3][3]);
 
 /**
+ * MatrixVecAdd performs an element-wise matrix addition operation on two 3x1 matrices and 
+ * "returns" the result by modifying the third argument.
+ * @param: vec1, pointer to a summand 3x1 vector
+ * @param: vec2, pointer to a summand 3x1 vector
+ * @param: result, pointer to a 3x1 vector that is modified to contain the sum of vec1 and vec2.
+ * @return:  None
+ * vec1 and vec2 are not modified by this function.  result is modified by this function.
+ */
+void VectorAdd(float vec1[3][1], float vec2[3][1], float result[3][1]);
+
+/**
  * MatrixMultiply performs a matrix-matrix multiplication operation on two 3x3
  * matrices and "returns" the result by modifying the third argument.
  * @param: mat1, pointer to left factor 3x3 matrix
@@ -74,6 +96,18 @@ void MatrixAdd(float mat1[3][3], float mat2[3][3], float result[3][3]);
  */
 void MatrixMultiply(float mat1[3][3], float mat2[3][3], float result[3][3]);
 
+/**
+ * MatrixVecMultiply performs a vector-matrix multiplication operation between
+ * one 3x1 vector and a 3x3 matrix, and "returns" the result by modifying the 
+ * third argument.
+ * @param: vec, pointer to left factor 3x1 vector
+ * @param: mat, pointer to right factor 3x3 matrix
+ * @param: result, pointer to matrix that is modified to contain the product of
+ * vec and matrix
+ * @return: none
+ * mat1 and mat2 are not modified by this function.  result is modified by this function.
+ */
+void VectorMatrixMultiply(float vec[3][1], float mat[3][3], float result[3][1]);
 
 /******************************************************************************
  * Matrix - Scalar Operations
@@ -91,7 +125,7 @@ void MatrixMultiply(float mat1[3][3], float mat2[3][3], float result[3][3]);
 void MatrixScalarAdd(float x, float mat[3][3], float result[3][3]);
 
 /**
- * MatrixScalarAdd performs the multiplication of a matrix and a scalar.
+ * MatrixScalarMultipy performs the multiplication of a matrix and a scalar.
  * Each element of the matrix is multiplied x.
  * The result is "returned"by modifying the third argument.
  * @param: x, a scalar float
@@ -101,6 +135,18 @@ void MatrixScalarAdd(float x, float mat[3][3], float result[3][3]);
  * x and mat are not modified by this function.  result is modified by this function.
  */
 void MatrixScalarMultiply(float x, float mat[3][3], float result[3][3]);
+
+/**
+ * MatrixVecMultiply performs the multiplication of a vector and a scalar.
+ * Each element of the vector is multiplied x.
+ * The result is "returned"by modifying the third argument.
+ * @param: x, a scalar float
+ * @param: vec, pointer to right factor 3x1 matrix
+ * @param: result, pointer to matrix that is modified to contain vec * x.
+ * @return: none
+ * x and mat are not modified by this function.  result is modified by this function.
+ */
+void VectorScalarMultiply(float x, float vec[3][1], float result[3][1]);
 
 
 /******************************************************************************

@@ -15,7 +15,6 @@
 #define FALSE 0
 
 //function takes pointer to matrix and prints it
-
 void MatrixPrint(float mat[3][3])
 {
     int i = 0;
@@ -37,8 +36,24 @@ void MatrixPrint(float mat[3][3])
     fflush(stdout);
 }
 
-//Function takes two matrix pointers for arguments and returns 1 if they're equal, 0 otherwise
 
+void VectorPrint(float vec[3][1]){
+    int i;
+    for(i = 0; i < 3; i++){
+        printf("------------\n");
+        fflush(stdout);
+        printf("||");
+        fflush(stdout);
+        printf("%8.4f",(double)vec[i][0]);
+        fflush(stdout);
+        printf("||");
+        printf("\n");
+    }
+    printf("------------\n");
+    fflush(stdout);
+}
+
+//Function takes two matrix pointers for arguments and returns 1 if they're equal, 0 otherwise
 int MatrixEquals(float mat1[3][3], float mat2[3][3])
 {
     //nesting for loops to iterate through every matrix data entry
@@ -67,6 +82,13 @@ void MatrixAdd(float mat1[3][3], float mat2[3][3], float result[3][3])
     }
 }
 
+void VectorAdd(float vec1[3][1], float vec2[3][1], float result[3][1]){
+    int i;
+    for(i = 0; i < 3; i++){
+        result[i][0] = vec1[i][0] + vec2[i][0];
+    }
+}
+
 //Function performs matrix multiplication returning pointer to resultant matrix
 void MatrixMultiply(float mat1[3][3], float mat2[3][3], float result[3][3])
 {
@@ -83,6 +105,18 @@ void MatrixMultiply(float mat1[3][3], float mat2[3][3], float result[3][3])
             }
             result[i][j] = sum;
         }
+    }
+}
+
+void VectorMatrixMultiply(float vec[3][1], float mat[3][3], float result[3][1]){
+    int i;
+    int j;
+    for(i = 0; i < 3; i++){ //iterate through rows
+        float sum = 0;
+        for(j = 0; j < 3; j++){ //iterate through columns
+            sum = (vec[j][0]*mat[i][j]) + sum;
+        }
+        result[i][0] = sum;
     }
 }
 
@@ -107,6 +141,14 @@ void MatrixScalarMultiply(float x, float mat[3][3], float result[3][3])
         for (j = 0; j < 3; j++) {
             result[i][j] = x * mat[i][j]; //perform scalar multiplication
         }
+    }
+}
+
+//function performs scalar multiplication on vector
+void VectorScalarMultiply(float x, float vec[3][1], float result[3][1]){
+    int i;
+    for(i = 0; i < 3; i++){
+        result[i][0] = x * vec[i][0];
     }
 }
 
