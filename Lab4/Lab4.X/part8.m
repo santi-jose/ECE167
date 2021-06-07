@@ -14,8 +14,12 @@ A = [M_T(:,1), M_T(:,2), M_T(:,3)]; %master body measurements
 H = [M_T(:,5), M_T(:,6), M_T(:,7)]; %slave body measurements
 
 %Convert to engineering units
-A_EU = (A-b_Ao)/16384; %g
-H_EU = (H-b_Ho)*0.15; %microTesla
+A_EU = A-b_Ao; %g
+H_EU = H-b_Ho; %microTesla
+
+%Normalize data
+A_EU = A_EU;
+H_EU = H_EU;
 
 %Run CallibrateEllipsoidData3D and CorrectEllipsoidData3D
 [Atilde_A, Btilde_A] = CalibrateEllipsoidData3D(A_EU(:,1), A_EU(:,2), A_EU(:,3), 20, 0);
