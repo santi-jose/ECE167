@@ -128,6 +128,12 @@ void IntegrateOpenLoop(float Rminus[3][3], float G[3][1], float deltaT, float Rp
     }
 }
 
+/*
+ * IntegrateClosedLoop integrates the gyros to attitude DCM.  
+ * @param: Rminus, pointer to a 3x3 float array. G, pointer to a 3x1  float array.
+ * deltaT, float variable. Rplus, pointer to a 3x3 float array.
+ * @return: none
+ */
 void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[3][1], 
                          float a[3][1], float mI[3][1], float aI[3][1], float dT,
                          float Rp[3][3],float Bp[3][1]){
@@ -222,4 +228,80 @@ void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[
     
     //Bplus = Bminus + (bdot*deltaT)
     VectorAdd(Bm, bd_dT, Bp);
+}
+
+/*
+ * DCMfromTriad implements a solution to Wahba's problem based in the TRIAD algorithm
+ * to give you an estimate of the DCM from two non-collinear vector measurements.  
+ * @param: m, 3x1 float vector of mags in body coordinates.
+ * a, 3x1 float vector of gravity in body coordinates.
+ * mI, 3x1 float vector of inertial magnetic reference vector
+ * aI, 3x1 float vector of gravity reference vector (accelInertial)
+ * R, 3x3 float matrix, DCM estimate
+ * @return: none
+ */
+void DCMfromTriad(float mags[3][1], float accels[3][1], float mI[3][1], float aI[3][1], float R[3][3]){
+    //set mags and accels to unit vectors
+    VectorScalarMultiply(1.0/sqrt(pow(accels[0][0],2)+pow(accels[1][0],2)+pow(accels[2][0],2)), accels, accels);
+    //printf("Pre-normalized mags:\n");
+    //VectorPrint(mags);
+    VectorScalarMultiply(1.0/sqrt(pow(mags[0][0],2)+pow(mags[1][0],2)+pow(mags[2][0],2)), mags, mags);
+    //printf("Normalized accels:\n");
+    //VectorPrint(accels);
+    //printf("Normalized mags:\n");
+    //VectorPrint(mags);
+    
+    //set inertial reference vectors to unit vectors
+    VectorScalarMultiply(1.0/sqrt(pow(aI[0][0],2)+pow(aI[1][0],2)+pow(aI[2][0],2)), aI, aI);
+    VectorScalarMultiply(1.0/sqrt(pow(mI[0][0],2)+pow(mI[1][0],2)+pow(mI[2][0],2)), mI, mI);
+    //printf("Normalized aI:\n");
+    //VectorPrint(aI);
+    //printf("Normalized mI:\n");
+    //VectorPrint(mI);
+    
+    //m = rcross(mags)*accels
+    float mx[3][3] = {};
+    float m[3][1] = {};
+    rcross(mags,mx); // mx = rcross(mags)
+    VectorMatrixMultiply(accels, mx, m); //m = accels * magsx = rcross(mags) * accels
+    VectorScalarMultiply(1.0/sqrt(pow(m[0][0],2)+pow(m[1][0],2)+pow(m[2][0],2)),m, m); //m = m/norm(m)
+    //printf("Normalized m:\n");
+    //VectorPrint(m);
+    
+    //M = rcross(magInertial) * accelInertial
+    float bigM[3][1] = {};
+    float mIx[3][3] = {};
+    rcross(mI, mIx); //mIx = rcross(mI)
+    VectorMatrixMultiply(aI, mIx, bigM); //bigM = mIx * aI = rcross(mI) * aI
+    VectorScalarMultiply(1.0/sqrt(pow(bigM[0][0],2)+pow(bigM[1][0],2)+pow(bigM[2][0],2)),bigM, bigM); //bigM = bigM/norm(bigM) 
+    //printf("Normalized bigM:\n");
+    //VectorPrint(bigM);
+    
+    //A = [magInertial M rcross(magInertial)*M]*[mags m rcross(mags)*m]'
+    float mIx_bigM [3][1] = {};
+    VectorMatrixMultiply(bigM, mIx, mIx_bigM); //mIx_M = rcross(mI)*bigM = mIx * bigM
+    float A_1 [3][3] = {
+        {mI[0][0], bigM[0][0], mIx_bigM[0][0]},
+        {mI[1][0], bigM[1][0], mIx_bigM[1][0]},
+        {mI[2][0], bigM[2][0], mIx_bigM[2][0]}
+    };
+    
+    float mx_m[3][1] = {};
+    VectorMatrixMultiply(m, mx, mx_m); //mx_m = rcross(m) * m = mx * m
+    float A_2[3][3] = {
+        {mags[0][0], m[0][0], mx_m[0][0]},
+        {mags[1][0], m[1][0], mx_m[1][0]},
+        {mags[2][0], m[2][0], mx_m[2][0]}
+    };
+    
+    //[mags m mx_m]' = transpose([mags m mx_m])
+    float A_2T[3][3] = {};
+    MatrixTranspose(A_2, A_2T); //A_2T = transpose(A_2)
+    
+    float A[3][3] = {};
+    MatrixMultiply(A_1, A_2T, A); //A = A_1*A_2T = [mI bigM mIx*bigM]*[mags m mx*m]'
+    
+    // R = A';
+    MatrixTranspose(A, R);
+    
 }

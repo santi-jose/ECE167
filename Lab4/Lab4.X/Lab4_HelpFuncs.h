@@ -54,4 +54,16 @@ void IntegrateClosedLoop(float Rm[3][3], float Bm[3][1], float g[3][1], float m[
                          float a[3][1], float mI[3][1], float aI[3][1], float dT,
                          float Rp[3][3], float Bp[3][1]);
 
+/*
+ * DCMfromTriad implements a solution to Wahba's problem based in the TRIAD algorithm
+ * to give you an estimate of the DCM from two non-collinear vector measurements.  
+ * @param: m, 3x1 float vector of mags in body coordinates.
+ * a, 3x1 float vector of gravity in body coordinates.
+ * mI, 3x1 float vector of inertial magnetic reference vector
+ * aI, 3x1 float vector of gravity reference vector (accelInertial)
+ * R, 3x3 float matrix, DCM estimate
+ * @return: none
+ */
+void DCMfromTriad(float m[3][1], float a[3][1], float mI[3][1], float aI[3][1], float R[3][3]);
+
 #endif // LAB4_HELPFUNCS_H
