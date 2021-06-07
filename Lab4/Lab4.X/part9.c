@@ -37,7 +37,6 @@ int main(void)
         {-2.2770, -2.4555, 141.7359}
     };
     */
-    
     float Atilde_A[3][3] = { //Acceleration Atilde
         {0.00005747852254497799, 0.0000006962760133109267, -0.0000007546228815041981},
         {0.0000007589899614982062, 0.00005580524191675066, -0.000001198147055853526},
@@ -51,46 +50,29 @@ int main(void)
         { -40.8672, 100.1499, 28048.0695}
     }; 
     */
-    
     float Atilde_H[3][3] = { //Magnetometer Atilde
         { 0.003437506848173, -0.000002710464790030440, 0.00003727102558938816},
         {-0.00001583930943518170, 0.003397122170054, 0.00004105873401311830},
         {-0.000004908413532090992, 0.00001202865575987469, 0.003368754667169}
     }; 
     
-    
     float Btilde_A[3][1] = { //Acceleration Btilde
         {-0.0071},
         {-0.0023},
         { 0.0257}
     }; 
-    /*float Btilde_A[3][1] = { //Acceleration Btilde
-        {-0.0071},
-        {-0.0023},
-        { 0.0257}
-    };*/
     
     float Btilde_H[3][1] = { //Magnetometer Btilde
         {  47.4216},
         { -33.4039},
         {-109.1870}
     };
-    /*float Btilde_H[3][1] = { //Magnetometer Btilde
-        {  47.4216},
-        { -33.4039},
-        {-109.1870}
-    }; */
     
     float Rmis[3][3] = { //Misalignment Matrix
         {  -0.6133, 0.6482, 0.4514},
         {-0.6756, -0.1343, -0.7250},
         { -0.4093, -0.7495, 0.5203}
     };
-    /*float Rmis[3][3] = { //Misalignment Matrix
-        {  -0.6133, 0.6482, 0.4514},
-        {-0.6756, -0.1343, -0.7250},
-        { -0.4093, -0.7495, 0.5203}
-    };*/
     
     float R[3][3] = { //initial DCM
         {1, 0, 0},
@@ -119,8 +101,8 @@ int main(void)
     //Feedback values
     //float Kp_a = 1; //these work for Yaw and Roll
     //float Kp_m = 1;
-    float Kp_a = 1;
-    float Kp_m = 0.3;
+    float Kp_a = 2;
+    float Kp_m = 0.0005;
     float Ki_a = Kp_a/10.0;
     float Ki_m = Kp_m/10.0;
     
@@ -149,7 +131,7 @@ int main(void)
             //a[0][0] = ICM20948_ReadAccelX();
             //a[1][0] = ICM20948_ReadAccelY();
             //a[2][0] = ICM20948_ReadAccelZ();            
-            a[0][0] = (ICM20948_ReadAccelX() - 158.0)*-1;
+            a[0][0] = (ICM20948_ReadAccelX() - 158.0);
             a[1][0] = (ICM20948_ReadAccelY() + 48.0);
             a[2][0] = (ICM20948_ReadAccelZ() + 21.0);
             
@@ -168,15 +150,12 @@ int main(void)
             
             //normalize magnetometer data
             //VectorScalarMultiply(1.0/sqrt(pow(m[0][0],2)+pow(m[1][0],2)+pow(m[2][0],2)), m, m);
-            //printf("m:\n");
-            //VectorPrint(m);
             
+            //read gyro data
             g[0][0] = ICM20948_ReadGyroX();
             g[1][0] = ICM20948_ReadGyroY();
             g[2][0] = ICM20948_ReadGyroZ();
-            
-            //printf("g:\n");
-            //VectorPrint(g);
+
             
             //convert accels to unit norm
             //ahat = (Atilde_A*a) + Btilde_A
@@ -197,46 +176,27 @@ int main(void)
             //convert gyro data to rad/s
             float w[3][1] = {};
             VectorScalarMultiply(1.0/131.0, g, w); //convert to dps
-            //printf("w dps: \n");
-            //VectorPrint(w);
             VectorScalarMultiply((M_PI/180), w, w); //convert to rad/s
-            //printf("w rps: \n");
-            //VectorPrint(w);
             
             //remove gyro bias
             //w = gyro(rad/s) - bhat;
             float _bhat[3][1] = {}; // -bhat
             VectorScalarMultiply(-1.0, bhat, _bhat);
             VectorAdd(w, _bhat, w); //w = gyro(rad/s) - bhat
-            //printf("w - bhat:\n");
-            //VectorPrint(bhat);
-            //VectorPrint(w);
             
             //Feedback
             // wmeas_a = [ab_x]*(R*aI)
             float wmeas_a[3][1] = {};
             float ab_x[3][3] = {};
             float R_aI[3][1] = {};
-            //rcross(a, ab_x); //not sure if this is right: ab_x = rcross(a)
             rcross(ahat, ab_x); //ab_x = rcross(ahat)
-            //printf("ahat: \n");
-            //VectorPrint(ahat);
-            //printf("ab_x:\n");
-            //MatrixPrint(ab_x);
             VectorMatrixMultiply(aI, R, R_aI); //R_aI = R * aI
-            //printf("R:\n");
-            //MatrixPrint(R);
-            //printf("aI:\n");
-            //VectorPrint(aI);
             VectorMatrixMultiply(R_aI, ab_x, wmeas_a); //wmeas_a = [ab_x](R*aI)
-            //printf("wmeas_a:\n");
-            //VectorPrint(wmeas_a);
             
             //wmeas_m = [mb_x](RT*mI)
             float wmeas_m[3][1] = {};
             float mb_x[3][3] = {};
             float R_mI[3][1] = {};
-            //rcross(m, mb_x); //mb_x = rcross(m)
             rcross(mhat, mb_x); //mb_x = rcross(mhat)
             VectorMatrixMultiply(mI, R, R_mI); //R_mI = R * mI
             VectorMatrixMultiply(R_mI, mb_x, wmeas_m); //wmeas_m = [mb_x](R*mI)
@@ -255,7 +215,6 @@ int main(void)
             float R_exp[3][3] = {};
             Rexp(wtotal, dT, R_exp); //R_exp = Rexp(wtotal, dT)
             MatrixMultiply(R_exp, R, R); //R = R_exp*R = (Rexp(wtotal,dT))*R
-            //MatrixMultiply(R, R_exp, R);
             
             //bdot = (-Ki_a * wmeas_a) + (-Ki_m * wmeas_m)
             float bdot[3][1] = {};
