@@ -13,9 +13,9 @@ b_Ho = [14231, -9444, -32568];
 A = [M_T(:,1), M_T(:,2), M_T(:,3)]; %master body measurements
 H = [M_T(:,5), M_T(:,6), M_T(:,7)]; %slave body measurements
 
-%Convert to engineering units
-A_EU = A-b_Ao; %g
-H_EU = H-b_Ho; %microTesla
+%Remove bias
+A_EU = A-b_Ao; %Acceleration
+H_EU = H-b_Ho; %Magnetometer
 
 %Normalize data
 A_EU = A_EU;

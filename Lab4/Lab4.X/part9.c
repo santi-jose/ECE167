@@ -101,7 +101,7 @@ int main(void)
     //Feedback values
     //float Kp_a = 1; //these work for Yaw and Roll
     //float Kp_m = 1;
-    float Kp_a = 2;
+    float Kp_a = 1;
     float Kp_m = 0.0005;
     float Ki_a = Kp_a/10.0;
     float Ki_m = Kp_m/10.0;

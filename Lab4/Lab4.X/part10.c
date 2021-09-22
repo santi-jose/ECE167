@@ -62,32 +62,22 @@ int main(void)
                 {ICM20948_ReadAccelZ() + 21.0}
             };
             
+            //convert to gravity
+            VectorScalarMultiply(1.0/16384.0, a, a);
+            
             float m[3][1] = { //magnetometer with bias subtracted
                 {ICM20948_ReadMagX() - 14231},
                 {ICM20948_ReadMagY() + 9444},
                 {ICM20948_ReadMagZ() + 32568}
             };
             
-            /*
-            float a[3][1] = { //accelerometer with bias subtracted
-                {1},
-                {2},
-                {3}
-            };
-            
-            float m[3][1] = { //magnetometer with bias subtracted
-                {4},
-                {5},
-                {6}
-            };
-            */
+            //convert to nanoTesla
+            VectorScalarMultiply(0.15, m, m);
             
             //call DCM fromTriad Function
             DCMfromTriad(m, a, mI, aI, R);
             
             //print output
-            //printf("R:\n");
-            //MatrixPrint(R);
             float Eul[3][1] = {};
             DCM2Euler(R, Eul);
             sprintf(oled_str,"Euler Angles:\nYaw: %8.4f\nPitch: %8.4f\nRoll: %8.4f\n",
