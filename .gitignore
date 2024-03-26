@@ -46,7 +46,7 @@ a.out
 *.img
 *.iso
 *.dll
-*.pdf
+# *.pdf
 *.zip
 *.7z
 
